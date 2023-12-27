@@ -5,9 +5,12 @@ import java.util.Base64;
 public class password_generator_secure {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        preExistingChecker pep = new preExistingChecker();
+        pep.preExistingPass();
         ask_password();
         try{
-            
+            System.out.println("Enter The Email/Id");
+            String email = scanner.nextLine();
             System.out.print("Enter the length of the password: ");
             int length = scanner.nextInt();
             if(length<8 && length>0){
@@ -23,7 +26,7 @@ public class password_generator_secure {
             System.out.println("Generated Password: " + password);
             String base64EncodedPassword = convertToBase64(password);
             System.out.println("Base64 Encoded Password: " + base64EncodedPassword);
-            storePassword(password);
+            storePassword(password,email);
             scanner.close();
         }
         
@@ -36,7 +39,7 @@ public class password_generator_secure {
     //ask user for password generator verification/authntication password
     public static void ask_password(){
         Scanner s = new Scanner(System.in);
-        System.out.println("Enter the key to access the program");
+        System.out.println("Enter the key to access the Password generator program");
         String user_pass_inp = s.nextLine();
         try{
             if(user_pass_inp.equals("root")){
@@ -93,7 +96,7 @@ public class password_generator_secure {
     }
 
     // Function to store the generated password in a file
-    public static void storePassword(String password) {
+    public static void storePassword(String password,String email) {
         try {
             File file = new File("passwords_gen.txt");
             FileWriter writer = new FileWriter(file, true);
@@ -109,13 +112,90 @@ public class password_generator_secure {
                 count++;
             }
 
-            writer.write((count + 1) + ". " + password + "\n");
+            writer.write((count + 1) + ". Email/ID: " + email + ", Password: " + password + "\n");
 
             writer.close();
             scanner.close();
             System.out.println("Password stored in 'passwords_gen.txt' file.");
         } catch (IOException e) {
             System.out.println("An error occurred while storing the password: " + e.getMessage());
+        }
+    }
+    
+
+}
+class preExistingChecker{
+    public static void preExistingPass(){
+        Scanner s = new Scanner(System.in);
+        System.out.println("Do you have pre-Existing password and key? Y/y=Yes N/n=No");
+        try{
+            String str=s.nextLine();
+            if(str.equals("Y") || str.equals("y")){
+                System.out.println("Y=Ok");
+                yesP();
+
+            }
+            else if(str.equals("N")||str.equals("n")){
+                System.out.println("N=No");
+                noP();
+
+            }
+            else{
+                throw new invalidInputException("Invalid Input Exception");
+
+            }
+            
+
+        }
+        catch(invalidInputException e){
+            System.out.println("Exception Caught" + e);
+        }
+        catch(Exception e){
+            System.out.println("Other Exception Caught/Something went wrong "+e);
+        }
+        finally{
+                System.out.println("Proceeding to Generator..");
+        }
+
+    }
+    public static void yesP(){
+        Scanner s = new Scanner(System.in);
+        System.out.print("Enter your email: ");
+        String email = s.nextLine();
+
+        System.out.print("Enter your password: ");
+        String password = s.nextLine();
+
+        // Write the email and password to a file
+        saveCredentialsToFile(email, password);
+
+        System.out.println("Credentials saved successfully!");
+        s.close();
+        System.exit(0);
+
+    }
+    public static void noP(){
+        Scanner s = new Scanner(System.in);
+        System.out.println("Ok now moving to generator");
+        // s.close();
+
+
+    }
+    public static void saveCredentialsToFile(String email, String password) {
+        Scanner s = new Scanner(System.in);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("credentials.txt"));
+            writer.write("Email: " + email);
+            writer.newLine();
+            writer.write("Password: " + password);
+            writer.close();
+        } 
+        catch (IOException e) {
+            System.out.println("An error occurred while saving credentials to file.");
+            e.printStackTrace();
+        }
+        catch(Exception e){
+            System.out.println("Exception Caught" + e);
         }
     }
 }
@@ -137,4 +217,12 @@ class invalidLengthException extends Exception{
     public invalidLengthException(String msg){
         super(msg);
     }
+}
+class invalidInputException extends Exception{
+    public invalidInputException(String msg){
+        super(msg);
+
+
+    }
+    
 }
