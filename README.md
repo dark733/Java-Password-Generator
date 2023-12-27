@@ -1,1 +1,1 @@
-# Java-Password-Generator
+# Java-Password-Generator and Manager
